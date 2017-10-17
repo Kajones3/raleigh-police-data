@@ -1,0 +1,28 @@
+getwd()
+testdata <- read.csv(choose.files(),header = TRUE)
+str(testdata)
+
+#A look at the number of crimes by district.
+table(testdata$DISTRICT)
+
+#segmenting the southwest area. This creates a new column.
+testdata$sw <- testdata$DISTRICT == "SOUTHWEST"
+#This allows us to create a new data frame to more easily view the crimes in the southwest area
+sw <- subset(testdata, DISTRICT == "SOUTHWEST", select = c(LCR.DESC,DISTRICT))
+#What are the top crimes in the database?
+x <- sort(table(testdata$LCR.DESC), decreasing = TRUE)
+head(x, n=10)
+tail(x, n=10)
+
+#MISC/MENTAL COMMITMENT is #4 on the list. Even higher than drug posession.
+#I wonder if it matters where you live.
+mental <- subset(testdata, LCR.DESC == "MISC/MENTAL COMMITMENT", select = c(LCR:DISTRICT))
+sort(table(mental$DISTRICT), decreasing = T)
+
+#Wow. The Southeast has almost 5 times as many mental commitments as anywhere else.
+#What is the timeline for this again?
+mental$INC.DATETIME <- as.Date(mental$INC.DATETIME, format = "%m/%d/%y")
+range(mental$INC.DATETIME)
+?as.Date()
+
+
