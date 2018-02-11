@@ -1,28 +1,48 @@
-getwd()
-testdata <- read.csv(choose.files(),header = TRUE)
-str(testdata)
 
-#A look at the number of crimes by district.
-table(testdata$DISTRICT)
+police <- read.csv("Police_Crime_Incident_Data_from_Jan_1_2005_-_Present.csv", header = T, stringsAsFactors = T)
+library(tidyverse)
+str(police)
 
-#segmenting the southwest area. This creates a new column.
-testdata$sw <- testdata$DISTRICT == "SOUTHWEST"
-#This allows us to create a new data frame to more easily view the crimes in the southwest area
-sw <- subset(testdata, DISTRICT == "SOUTHWEST", select = c(LCR.DESC,DISTRICT))
-#What are the top crimes in the database?
-x <- sort(table(testdata$LCR.DESC), decreasing = TRUE)
-head(x, n=10)
-tail(x, n=10)
+#Looks like there are 441 different factors for charges.
+#Let's look at a summary of the different charges
+summary(police)
 
-#MISC/MENTAL COMMITMENT is #4 on the list. Even higher than drug posession.
-#I wonder if it matters where you live.
-mental <- subset(testdata, LCR.DESC == "MISC/MENTAL COMMITMENT", select = c(LCR:DISTRICT))
-sort(table(mental$DISTRICT), decreasing = T)
+#What are the top 10 pairs?
+summary(police$LCR.DESC, maxsum = 10)
 
-#Wow. The Southeast has almost 5 times as many mental commitments as anywhere else.
-#What is the timeline for this again?
-mental$INC.DATETIME <- as.Date(mental$INC.DATETIME, format = "%m/%d/%y")
-range(mental$INC.DATETIME)
-?as.Date()
+# ASSAULT SIMPLE (NOT AGGRAVATED) 
+# 36689 
+# MISC/ALL OTHER / NO OFFENSE COMMITTED 
+# 32766 
+# Miscellaneous/All Other Non-Offenses 
+# 20504 
+# MISC/MENTAL COMMITMENT 
+# 18469 
+# DRUGS/POSSESSION/MARIJUANA 
+# 18023 
+# ALL OTHER/ALL OTHER OFFENSES (COMM.THREATS, ETC.) 
+# 16049 
+# DAMAGE TO VEHICLES 
+# 15211 
+# DAMAGE TO PROPERTY/PRIVATE PROPERTY 
+# 14923 
+# Assault/Simple 
+# 12712 
+# (Other) 
+# 382689
+#Looks like Misc/Mental Commitment is the no. 4 offence with 18,469
+#I'm also interested in Damage to Vehicles
 
+mental <- filter(police, police$LCR.DESC == "MISC/MENTAL COMMITMENT")
+vehicles <- filter(police, police$LCR.DESC == "DAMAGE TO VEHICLES")
 
+#I want to see where the mental comittments are happening.
+summary(mental$DISTRICT, maxsum = 6)
+
+#SOUTHEAST NORTHWEST     NORTH  SOUTWEST NORTHEAST   (Other) 
+# 10592      2097      1713      1669      1615       783 
+
+#They don't have data for the location for the Mental Committment locations 
+#so we need to base it on districts.
+
+#Is there a difference between 
